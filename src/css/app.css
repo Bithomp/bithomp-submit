@@ -55,6 +55,23 @@ a:hover {
   text-align: center;
 }
 
+.main-box .offline-signing {
+  margin: 20px;
+  margin-bottom: 0;
+}
+
+.main-box .offline-signing .info {
+  width: 220px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.main-box .offline-signing .info span {
+  display: inline-block;
+  width: 120px;
+  text-align: left;
+}
+
 .main-box .button-submit {
   width: 410px !important;
   margin-top: 0 !important;
