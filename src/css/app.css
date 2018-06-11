@@ -232,3 +232,53 @@ a:hover {
 }
 
 /* spinner ends */
+
+@media (max-width: 470px) {
+  body {
+    font-size: 12px;
+  }
+
+  .main-box {
+    margin-top: 20px;
+    width: 300px;
+    min-height: 400px;
+  }
+
+  .main-box .logo {
+    width: 90px !important;
+    height: 90px !important;
+  }
+
+  .main-box h2 {
+    font-size: 14px;
+    margin-top: 20px;
+  }
+
+  .main-box .social-icons {
+    top: 15px !important;
+  }
+
+  .main-box input[type="button"],
+  .main-box button {
+    font-size: 12px;
+    padding: 4px;
+    min-width: 110px;
+  }
+
+  .main-box .footer {
+    font-size: 10px;
+  }
+
+  .main-box input, textarea, .main-box .button-submit {
+    width: 290px !important;
+  }
+
+  .main-box .offline-signing .info {
+    width: 210px;
+  }
+
+  .main-box .offline-signing .info span {
+    width: 120px;
+  }
+
+}
