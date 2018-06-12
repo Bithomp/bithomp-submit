@@ -40,6 +40,8 @@ Lodash - https://github.com/lodash/lodash
 
 ripple-lib  - https://github.com/ripple/ripple-lib
 
+instascan - https://github.com/schmich/instascan
+
 ## License
 
 2018 Octillion S.A. All Rights Reserved

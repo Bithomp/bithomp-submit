@@ -87,7 +87,12 @@
 
             <div class="feedback orange" id="feedback"></div>
 
+            <div id="video" class="hidden"><video id="preview"></video></div>
+
+            <button type="button" class="button-scan" id="scan">Scan QR code</button>
             <button type="button" class="button-submit" id="submit">Submit</button>
+
+            <div class="feedback hidden" id="tx-hash"></div>
 
             <hr>
 
@@ -101,6 +106,7 @@
         <script src="js/lodash.js"></script>
         <script src="js/ripple-0.22.0.js"></script>
         <script src="js/jquery-3.2.1.js"></script>
+        <script src="js/instascan.min.js"></script>
         <script src="js/index.js"></script>
     </body>
 </html>

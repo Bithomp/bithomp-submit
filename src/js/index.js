@@ -8,14 +8,58 @@ DOM.fee = $('#fee');
 DOM.sequence = $('#sequence');
 DOM.txBlob = $('#txBlob');
 DOM.feedback = $('#feedback');
+DOM.scan = $('#scan');
 DOM.submit = $('#submit');
 DOM.thisYear = $('#thisYear');
+DOM.video = $('#video');
+DOM.txHash = $('#tx-hash');
 
 function init() {
+  eraseData();
   thisYear();
   DOM.submit.on("click", submit);
+  DOM.scan.on("click", scan);
   DOM.txBlob.on("change keyup paste", txBlobChanged);
   pull();
+}
+
+function eraseData() {
+  DOM.txHash.html('');
+  DOM.feedback.html('');
+}
+
+function scan() {
+
+  DOM.video.show();
+
+  let scanner = new Instascan.Scanner({
+    video: document.getElementById('preview'),
+    backgroundScan: false,
+    mirror: false,
+  });
+
+  scanner.addListener('scan', function (tx) {
+    tx = JSON.parse(tx);
+    DOM.txBlob.val(tx.blob);
+    DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.hash + '" target="_blank">' + tx.hash + '</a>');
+    DOM.txBlob.attr("readonly", true);
+    scanner.stop();
+    DOM.video.hide();
+  });
+
+  Instascan.Camera.getCameras().then(function (cameras) {
+    if (cameras.length > 0) {
+      if (cameras.length > 1) {
+        scanner.start(cameras[1]);
+      } else {
+        scanner.start(cameras[0]);
+      }
+    } else {
+      console.error('No cameras found.');
+    }
+  }).catch(function (e) {
+    console.error(e);
+  });
 }
 
 function getSequence(address) {
@@ -81,7 +125,7 @@ function getFee() {
 }
 
 function txBlobChanged() {
-  DOM.feedback.html('');
+  eraseData();
 }
 
 function submit() {
@@ -107,6 +151,7 @@ function submit() {
       blob
     ).then(function(result) {
       DOM.feedback.html(result.resultMessage);
+      DOM.txHash.show();
       DOM.submit.html(buttonValue);
     }).catch(function (error) {
       DOM.feedback.html(error.message);
