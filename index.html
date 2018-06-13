@@ -71114,7 +71114,6 @@ function eraseData() {
 }
 
 function scan() {
-
   DOM.video.show();
 
   let scanner = new Instascan.Scanner({
@@ -71124,10 +71123,14 @@ function scan() {
   });
 
   scanner.addListener('scan', function (tx) {
-    tx = JSON.parse(tx);
-    DOM.txBlob.val(tx.blob);
-    DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.hash + '" target="_blank">' + tx.hash + '</a>');
-    DOM.txBlob.attr("readonly", true);
+    if (tx.charAt(0) == '{') {
+      tx = JSON.parse(tx);
+      DOM.txBlob.val(tx.blob);
+      DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.hash + '" target="_blank">' + tx.hash + '</a>');
+      DOM.txBlob.attr("readonly", true);
+    } else {
+      DOM.txBlob.val(tx);
+    }
     scanner.stop();
     DOM.video.hide();
   });
