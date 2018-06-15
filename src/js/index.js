@@ -16,12 +16,20 @@ DOM.txHash = $('#tx-hash');
 DOM.account = $('#account');
 
 function init() {
+  hideQrScan();
   eraseData();
   thisYear();
   DOM.submit.on("click", submit);
   DOM.scan.on("click", scan);
   DOM.txBlob.on("change keyup paste", txBlobChanged);
   pull();
+}
+
+function hideQrScan() {
+  var iOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (iOS) {
+    DOM.scan.hide();
+  }
 }
 
 function eraseData() {
