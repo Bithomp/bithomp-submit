@@ -13,6 +13,7 @@ DOM.submit = $('#submit');
 DOM.thisYear = $('#thisYear');
 DOM.video = $('#video');
 DOM.txHash = $('#tx-hash');
+DOM.account = $('#account');
 
 function init() {
   eraseData();
@@ -40,8 +41,8 @@ function scan() {
   scanner.addListener('scan', function (tx) {
     if (tx.charAt(0) == '{') {
       tx = JSON.parse(tx);
-      DOM.txBlob.val(tx.blob);
-      DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.hash + '" target="_blank">' + tx.hash + '</a>');
+      DOM.txBlob.val(tx.signedTransaction);
+      DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.id + '" target="_blank">' + tx.id + '</a>');
       DOM.txBlob.attr("readonly", true);
     } else {
       DOM.txBlob.val(tx);
@@ -66,6 +67,7 @@ function scan() {
 }
 
 function getSequence(address) {
+  DOM.account.html('<a href="' + explorer + address + '" target="_blank">' + address + '</a><br><br>');
   api.getAccountInfo(address).then(function(info) {
     if (info && info.sequence) {
       DOM.sequence.html('<div class="info"><span>Next sequence:</span> <b class="orange">' + info.sequence + '</b></div>');
@@ -133,9 +135,16 @@ function txBlobChanged() {
 
 function submit() {
   DOM.feedback.html('');
+  DOM.txBlob.attr("readonly", false);
 
   var blob = DOM.txBlob.val();
   blob = blob.trim();
+
+  if (blob.charAt(0) == '{') {
+    var tx = JSON.parse(blob);
+    blob = tx.signedTransaction;
+    DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.id + '" target="_blank">' + tx.id + '</a>');
+  }
 
   if (blob == '') {
     DOM.feedback.html('Error: tx blob is empty');
