@@ -1,10 +1,10 @@
-# Ripple-submit
+# Bithomp-submit
 
-A tool to submit offline signed transaction.
+A tool to submit offline signed xrpl transaction.
 
 ## Online version
 
-https://bithomp.github.io/ripple-submit/
+https://bithomp.github.io/bithomp-submit/
 
 ## Standalone version
 
@@ -32,7 +32,7 @@ please do not commit changes to `index.html`
 
 This project is 100% open-source code
 
-Get the source code from the repository - https://github.com/Bithomp/ripple-submit
+Get the source code from the repository - https://github.com/Bithomp/bithomp-submit
 
 ## Libraries
 
@@ -50,4 +50,4 @@ The software is provided "as is", without warranty of any kind, express or impli
 
 Please refer to the software license for more details.
 
-https://github.com/Bithomp/ripple-submit/blob/master/LICENSE
+https://github.com/Bithomp/bithomp-submit/blob/master/LICENSE
