@@ -4,9 +4,9 @@ var api = new ripple.RippleAPI({server: 'wss://s1.ripple.com'});
 var explorer = 'https://bithomp.com/explorer/';
 
 var DOM = {};
+DOM.mainBox = $('.main-box');
 DOM.fee = $('#fee');
 DOM.sequence = $('#sequence');
-DOM.txBlob = $('#txBlob');
 DOM.feedback = $('#feedback');
 DOM.scan = $('#scan');
 DOM.submit = $('#submit');
@@ -14,6 +14,7 @@ DOM.thisYear = $('#thisYear');
 DOM.video = $('#video');
 DOM.txHash = $('#tx-hash');
 DOM.account = $('#account');
+DOM.add = $('#add');
 
 function init() {
   hideQrScan();
@@ -21,8 +22,20 @@ function init() {
   thisYear();
   DOM.submit.on("click", submit);
   DOM.scan.on("click", scan);
-  DOM.txBlob.on("change keyup paste", txBlobChanged);
+  DOM.add.on("click", add);
+  DOM.mainBox.on("change keyup paste", ".tx-blob", txBlobChanged);
   pull();
+}
+
+function add() {
+  var txList = $('.tx-blob');
+  var countTX = txList.length;
+  //max 20 tx, hide button to add more
+  if (countTX == 19) {
+    DOM.add.hide();
+  }
+  var lastTX = txList.eq(countTX-1);
+  lastTX.clone().val('').insertAfter(lastTX);
 }
 
 function hideQrScan() {
@@ -47,13 +60,16 @@ function scan() {
   });
 
   scanner.addListener('scan', function (tx) {
+    var txList = $('.tx-blob');
+    var countTX = txList.length;
+    var lastTX = txList.eq(countTX-1);
     if (tx.charAt(0) == '{') {
       tx = JSON.parse(tx);
-      DOM.txBlob.val(tx.signedTransaction);
+      lastTX.val(tx.signedTransaction);
       DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.id + '" target="_blank">' + tx.id + '</a>');
-      DOM.txBlob.attr("readonly", true);
+      lastTX.attr("readonly", true);
     } else {
-      DOM.txBlob.val(tx);
+      lastTX.val(tx);
     }
     scanner.stop();
     DOM.video.hide();
@@ -143,25 +159,65 @@ function txBlobChanged() {
 
 function submit() {
   DOM.feedback.html('');
-  DOM.txBlob.attr("readonly", false);
 
-  var blob = DOM.txBlob.val();
-  blob = blob.trim();
+  $('.tx-blob').each(function(i, obj) {
+    $(this).attr("readonly", false);
+  });
 
-  if (blob.charAt(0) == '{') {
-    var tx = JSON.parse(blob);
-    blob = tx.signedTransaction;
-    DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.id + '" target="_blank">' + tx.id + '</a>');
+  var txhash = '';
+  
+  var txList = $('.tx-blob');
+  var signedTransactions = [];
+  var blobError = false;
+  txList.each(function() {
+    var blob = $(this).val();
+    blob = blob.trim();
+    if (blob.charAt(0) == '{') {
+      var tx = JSON.parse(blob);
+      blob = tx.signedTransaction;
+      txhash = tx.id;
+    } else {
+      blob.replace(/['"]+/g, '');
+    }
+    if (blob != '') {
+      if (!validateBlob(blob)) {
+        DOM.feedback.html('Error: Incorrect transaction blob!');
+        $(this).focus();
+        blobError = true;
+        return false;
+      } else {
+        signedTransactions.push(blob);
+      }
+    }
+  });
+
+  if (blobError) {
+    return;
   }
 
-  if (blob == '') {
+  if (!signedTransactions.length) {
     DOM.feedback.html('Error: tx blob is empty');
+    txList.eq(0).focus();
     return;
   }
 
-  if (!validateBlob(blob)) {
-    DOM.feedback.html('Error: Incorrect transaction blob!');
-    return;
+  if (signedTransactions.length == 1) {
+    var blob = signedTransactions[0];
+  } else {
+    //multisig
+    try {
+      var tx = api.combine(signedTransactions);
+    }
+    catch(error) {
+      DOM.feedback.html(error.message);
+      return;
+    }
+    var blob = tx.signedTransaction;
+    txhash = tx.id;
+  }
+
+  if (txhash != '') {
+    DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + txhash + '" target="_blank">' + txhash + '</a>');
   }
 
   var buttonValue = addLoadingState(DOM.submit);
@@ -196,7 +252,7 @@ function thisYear() {
   DOM.thisYear.html(" - " + n);
 }
 
-function validateBlob(blob) { 
+function validateBlob(blob) {
   var re = /^[0-9A-F]*$/;
   return re.test(blob);
 } 

@@ -190,6 +190,10 @@ a:hover {
   transition:         all 0.1s ease-in-out;
 }
 
+.main-box button.button-add {
+  width: 406px;
+}
+
 .main-box .footer {
   margin: 20px auto;
 }
@@ -270,7 +274,9 @@ a:hover {
     font-size: 10px;
   }
 
-  .main-box input, textarea, .main-box .button-submit {
+  .main-box input, 
+  .main-box textarea,
+  .main-box button {
     width: 290px !important;
   }
 
