@@ -1,6 +1,6 @@
 (function() {
 
-var version = '0.3.1';
+var version = '0.3.2';
 var testnet = false;
 var bithomp = 'https://bithomp.com';
 var bithompTestnet = 'https://test.bithomp.com';
@@ -40,6 +40,7 @@ function init() {
 function testnetConnect() {
   if (testnet) {
     api = new ripple.RippleAPI({server: wsTestnet});
+    $("a[href='" + bithomp + "']").attr("href", bithompTestnet);
     bithomp = bithompTestnet;
     DOM.header.text(DOM.header.text() + ' (TESTNET)');
     DOM.body.addClass('testnet');
