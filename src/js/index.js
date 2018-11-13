@@ -1,7 +1,12 @@
 (function() {
 
-var api = new ripple.RippleAPI({server: 'wss://s1.ripple.com'});
-var explorer = 'https://bithomp.com/explorer/';
+var version = '0.3.1';
+var testnet = false;
+var bithomp = 'https://bithomp.com';
+var bithompTestnet = 'https://test.bithomp.com';
+var wsProduction = 'wss://s3.ripple.com';
+var wsTestnet = 'wss://s.altnet.rippletest.net:51233';
+var api = new ripple.RippleAPI({server: wsProduction});
 
 var DOM = {};
 DOM.mainBox = $('.main-box');
@@ -15,8 +20,12 @@ DOM.video = $('#video');
 DOM.txHash = $('#tx-hash');
 DOM.account = $('#account');
 DOM.add = $('#add');
+DOM.version = $('#version');
+DOM.header = $('#header');
+DOM.body = $('body');
 
 function init() {
+  testnetConnect();
   hideQrScan();
   eraseData();
   thisYear();
@@ -25,6 +34,20 @@ function init() {
   DOM.add.on("click", add);
   DOM.mainBox.on("change keyup paste", ".tx-blob", txBlobChanged);
   pull();
+  showVersion();
+}
+
+function testnetConnect() {
+  if (testnet) {
+    api = new ripple.RippleAPI({server: wsTestnet});
+    bithomp = bithompTestnet;
+    DOM.header.text(DOM.header.text() + ' (TESTNET)');
+    DOM.body.addClass('testnet');
+  }
+}
+
+function showVersion() {
+  DOM.version.html('v. ' + version);
 }
 
 function add() {
@@ -66,7 +89,7 @@ function scan() {
     if (tx.charAt(0) == '{') {
       tx = JSON.parse(tx);
       lastTX.val(tx.signedTransaction);
-      DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + tx.id + '" target="_blank">' + tx.id + '</a>');
+      DOM.txHash.html('Click in 10 seconds:<br><a href="' + bithomp + '/explorer/' + tx.id + '" target="_blank">' + tx.id + '</a>');
       lastTX.attr("readonly", true);
     } else {
       lastTX.val(tx);
@@ -91,7 +114,7 @@ function scan() {
 }
 
 function getSequence(address) {
-  DOM.account.html('<a href="' + explorer + address + '" target="_blank">' + address + '</a><br><br>');
+  DOM.account.html('<a href="' + bithomp + '/explorer/' + address + '" target="_blank">' + address + '</a><br><br>');
   api.getAccountInfo(address).then(function(info) {
     if (info && info.sequence) {
       DOM.sequence.html('<div class="info"><span>Next sequence:</span> <b class="orange">' + info.sequence + '</b></div>');
@@ -100,7 +123,7 @@ function getSequence(address) {
     }
   }).catch(function (error) {
     if (error.message == 'actNotFound') {
-      DOM.sequence.html('This account is not activated yet. <a href="https://bithomp.com/activation/' + address + '" target="_blank">Activate</a>');
+      DOM.sequence.html('This account is not activated yet. <a href="' + bithomp + '/activation/' + address + '" target="_blank">Activate</a>');
     } else if (error.message == 'instance.address does not conform to the "address" format') {
       DOM.sequence.html('Incorrect ripple address in the url');
     } else {
@@ -217,7 +240,7 @@ function submit() {
   }
 
   if (txhash != '') {
-    DOM.txHash.html('Click in 10 seconds:<br><a href="' + explorer + txhash + '" target="_blank">' + txhash + '</a>');
+    DOM.txHash.html('Click in 10 seconds:<br><a href="' + bithomp + '/explorer/' + txhash + '" target="_blank">' + txhash + '</a>');
   }
 
   var buttonValue = addLoadingState(DOM.submit);
