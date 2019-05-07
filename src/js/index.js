@@ -1,6 +1,6 @@
 (function() {
 
-var version = '0.3.2';
+var version = '0.4.5';
 var testnet = false;
 var bithomp = 'https://bithomp.com';
 var bithompTestnet = 'https://test.bithomp.com';
@@ -21,7 +21,6 @@ DOM.txHash = $('#tx-hash');
 DOM.account = $('#account');
 DOM.add = $('#add');
 DOM.version = $('#version');
-DOM.header = $('#header');
 DOM.body = $('body');
 
 function init() {
@@ -42,7 +41,6 @@ function testnetConnect() {
     api = new ripple.RippleAPI({server: wsTestnet});
     $("a[href='" + bithomp + "']").attr("href", bithompTestnet);
     bithomp = bithompTestnet;
-    DOM.header.text(DOM.header.text() + ' (TESTNET)');
     DOM.body.addClass('testnet');
   }
 }
