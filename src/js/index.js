@@ -1,6 +1,6 @@
 (function() {
 
-var version = '0.4.5';
+var version = '0.4.6';
 var testnet = false;
 var bithomp = 'https://bithomp.com';
 var bithompTestnet = 'https://test.bithomp.com';
@@ -24,6 +24,10 @@ DOM.version = $('#version');
 DOM.body = $('body');
 
 function init() {
+  var hostname = window.location.hostname;
+  if (hostname.indexOf("test.") > -1) {
+    testnet = true;
+  }
   testnetConnect();
   hideQrScan();
   eraseData();
@@ -187,7 +191,7 @@ function submit() {
   });
 
   var txhash = '';
-  
+
   var txList = $('.tx-blob');
   var signedTransactions = [];
   var blobError = false;
@@ -277,7 +281,7 @@ function thisYear() {
 function validateBlob(blob) {
   var re = /^[0-9A-F]*$/;
   return re.test(blob);
-} 
+}
 
 init();
 
