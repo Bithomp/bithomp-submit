@@ -263,6 +263,8 @@
         <div id="sequence"></div>
       </div>
 
+      <pre id="decodedTx" class="decoded-tx hidden"></pre>
+
       <textarea class="tx-blob" placeholder="Enter signed transaction blob here"></textarea>
 
       <button type="button" class="button-add" id="add">Add more (multi-signature)</button>
@@ -271,24 +273,25 @@
 
       <div id="video" class="hidden"><video id="preview"></video></div>
 
-      <button type="button" class="button-scan" id="scan">Scan QR code</button>
-      <button type="button" class="button-submit" id="submit">Submit</button>
+      <button type="button" id="scan">Scan QR code</button>
+      <button type="button" id="decode">Decode</button>
+      <button type="button" id="submit">Submit</button>
 
       <div class="feedback hidden" id="tx-hash"></div>
 
       <hr>
 
       <div class="footer">
-        © 2015 <span id="thisYear"> - 2018</span> <a href="http://octillion.info">Octillion S.A.</a> All Rights Reserved 
+        © 2015 - <span id="thisYear">2020</span> <a href="http://octillion.info">Octillion S.A.</a> All Rights Reserved
         | <a href="https://bithomp.com/donate" target="_blank" rel="noopener">Donate</a>
       </div>
-
     </div>
 
     <script src="js/lodash.js"></script>
     <script src="js/ripple-0.22.0.js"></script>
     <script src="js/jquery-3.2.1.js"></script>
     <script src="js/instascan.min.js"></script>
+    <script src="js/decodeXrplTx.min.js"></script>
     <script src="js/index.js"></script>
   </body>
 </html>

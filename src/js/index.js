@@ -1,12 +1,13 @@
 (function() {
 
-var version = '0.4.6';
+var version = '0.4.7';
 var testnet = false;
 var bithomp = 'https://bithomp.com';
 var bithompTestnet = 'https://test.bithomp.com';
 var wsProduction = 'wss://s3.ripple.com';
 var wsTestnet = 'wss://s.altnet.rippletest.net:51233';
 var api = new ripple.RippleAPI({server: wsProduction});
+var scanner;
 
 var DOM = {};
 DOM.mainBox = $('.main-box');
@@ -14,6 +15,8 @@ DOM.fee = $('#fee');
 DOM.sequence = $('#sequence');
 DOM.feedback = $('#feedback');
 DOM.scan = $('#scan');
+DOM.decode = $('#decode');
+DOM.decodedTx = $('#decodedTx');
 DOM.submit = $('#submit');
 DOM.thisYear = $('#thisYear');
 DOM.video = $('#video');
@@ -24,16 +27,13 @@ DOM.version = $('#version');
 DOM.body = $('body');
 
 function init() {
-  var hostname = window.location.hostname;
-  if (hostname.indexOf("test.") > -1) {
-    testnet = true;
-  }
   testnetConnect();
   hideQrScan();
   eraseData();
   thisYear();
   DOM.submit.on("click", submit);
   DOM.scan.on("click", scan);
+  DOM.decode.on("click", decodeTx);
   DOM.add.on("click", add);
   DOM.mainBox.on("change keyup paste", ".tx-blob", txBlobChanged);
   pull();
@@ -41,6 +41,10 @@ function init() {
 }
 
 function testnetConnect() {
+  var hostname = window.location.hostname;
+  if (hostname.indexOf("test.") > -1) {
+    testnet = true;
+  }
   if (testnet) {
     api = new ripple.RippleAPI({server: wsTestnet});
     $("a[href='" + bithomp + "']").attr("href", bithompTestnet);
@@ -56,8 +60,8 @@ function showVersion() {
 function add() {
   var txList = $('.tx-blob');
   var countTX = txList.length;
-  //max 20 tx, hide button to add more
-  if (countTX == 19) {
+  //max 8 tx, hide button to add more
+  if (countTX == 7) {
     DOM.add.hide();
   }
   var lastTX = txList.eq(countTX-1);
@@ -74,12 +78,19 @@ function hideQrScan() {
 function eraseData() {
   DOM.txHash.html('');
   DOM.feedback.html('');
+  DOM.decodedTx.hide();
 }
 
 function scan() {
+  if (DOM.scan.text() == 'Cancel') {
+    DOM.scan.text('Scan QR code');
+    stopScanner();
+    return;
+  }
   DOM.video.show();
+  DOM.scan.text('Cancel');
 
-  let scanner = new Instascan.Scanner({
+  scanner = new Instascan.Scanner({
     video: document.getElementById('preview'),
     backgroundScan: false,
     mirror: false,
@@ -97,8 +108,7 @@ function scan() {
     } else {
       lastTX.val(tx);
     }
-    scanner.stop();
-    DOM.video.hide();
+    stopScanner();
   });
 
   Instascan.Camera.getCameras().then(function (cameras) {
@@ -114,6 +124,35 @@ function scan() {
   }).catch(function (e) {
     console.error(e);
   });
+}
+
+function stopScanner() {
+  if (typeof scanner !== "undefined") {
+    scanner.stop();
+  }
+  DOM.video.hide();
+}
+
+function decodeTx() {
+  DOM.feedback.html('');
+  var blob = $('.tx-blob').first().val();
+  blob = blob.trim();
+  if (blob.charAt(0) == '{') {
+    var tx = JSON.parse(blob);
+    blob = tx.signedTransaction;
+  } else {
+    blob = blob.replace(/['"]+/g, '');
+  }
+  if (blob != '') {
+    if (!validateBlob(blob)) {
+      DOM.feedback.html('Error: Incorrect transaction blob!');
+      $('.tx-blob').first().focus();
+    } else {
+      var txJson = decodeXrplTx.decodeTx(blob);
+      DOM.decodedTx.text(JSON.stringify(txJson, null, 2));
+      DOM.decodedTx.show();
+    }
+  }
 }
 
 function getSequence(address) {
@@ -203,7 +242,7 @@ function submit() {
       blob = tx.signedTransaction;
       txhash = tx.id;
     } else {
-      blob.replace(/['"]+/g, '');
+      blob = blob.replace(/['"]+/g, '');
     }
     if (blob != '') {
       if (!validateBlob(blob)) {
@@ -275,7 +314,7 @@ function addLoadingState(element) {
 function thisYear() {
   var d = new Date();
   var n = d.getFullYear();
-  DOM.thisYear.html(" - " + n);
+  DOM.thisYear.html(n);
 }
 
 function validateBlob(blob) {
