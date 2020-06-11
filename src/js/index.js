@@ -1,10 +1,10 @@
 (function() {
 
-var version = '0.4.7';
+var version = '0.4.8';
 var testnet = false;
 var bithomp = 'https://bithomp.com';
 var bithompTestnet = 'https://test.bithomp.com';
-var wsProduction = 'wss://s3.ripple.com';
+var wsProduction = 'wss://xrpl.ws';
 var wsTestnet = 'wss://s.altnet.rippletest.net:51233';
 var api = new ripple.RippleAPI({server: wsProduction});
 var scanner;
