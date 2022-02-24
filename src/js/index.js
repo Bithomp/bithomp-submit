@@ -299,7 +299,7 @@ function submit() {
       DOM.submit.html(buttonValue);
     });
   } else {
-    connect_and_updateFee();
+    connect_and_update();
     DOM.feedback.html('Error: Reconnecting, try again!');
   }
 }
