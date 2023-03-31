@@ -18,6 +18,12 @@ This can be compiled from source using the command `python compile.py`
 
 Submit the data and wait for a result.
 
+## for devs without python
+
+`brew install python`
+
+`echo "alias python=/usr/bin/python3" >> ~/.zshrc`
+
 ## Making changes
 
 Please do not make modifications to `index.html`, since they will
